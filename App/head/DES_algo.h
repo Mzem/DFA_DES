@@ -3,4 +3,6 @@
 
 // Algorithme de chiffrement DES
 
+long DES(long, long);
+
 #endif
