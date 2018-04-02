@@ -3,8 +3,8 @@
 
 // Fonction de permutation de bits
 
-long binaire (long);
+long binaire(long);
 
-long Permutation(long, int[], int);
+long permutation(long, int[], int);
 
 #endif

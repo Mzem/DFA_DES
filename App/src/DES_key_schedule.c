@@ -27,8 +27,7 @@ int PC2[] = {
 
 //Rotation à gauche des bits de chaque moitié C et D (28 bits) de T (56 bits)
 long LeftShift(long T) {
-	long C = T & 0xFFFFFFF0000000L;
-	C = C >> 28;
+	long C = (T & 0xFFFFFFF0000000L) >> 28;
 	long D = T & 0x0000000FFFFFFFL;;
 	long tmp;
 	
@@ -61,14 +60,14 @@ void DES_key_schedule(long Ki[], long K)
 	int v[16] = {1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
 	
 	// Division de K en deux entités de 28 bits (C et D sont les deux moitiés de T)
-	long T = Permutation(K, PC1, 56);
+	long T = permutation(K, PC1, 56);
 	
 	for(int i = 0; i < 16; i++) {
-		if(v[i] == 1)
+		if (v[i] == 1)
 			T = LeftShift(T);
-		else {
+		else
 			T = LeftShift(LeftShift(T));
-		}
-		Ki[i] = Permutation(T, PC2, 48);
+
+		Ki[i] = permutation(T, PC2, 48);
 	}
 }
