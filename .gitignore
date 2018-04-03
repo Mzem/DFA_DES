@@ -1,4 +1,2 @@
-*.tex
 *.o
 App/bin
-App/DFA_DES
