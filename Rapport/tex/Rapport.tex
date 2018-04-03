@@ -77,8 +77,62 @@
 		
 		La seule inconnue dans toutes ces équations est $k_{16}$. Pour trouver $k_{16}$, il faut faire une recherche exhaustive sur chacune des 8 S-box correspondant à chacune des 8 équations. Chaque recherche sur les S-box va permettre de révéler 6 bits de $k_{16}$, pour en avoir au final 48 bits. La complexité de cette attaque est donc de $8$ x $2^{6}$.
 		
-	\section*{Question 2}
+	\section*{Question 2 :}
 		\subsection*{2.1 Recherche de la clé $k_{16}$ de 48 bits}
-		\noindent \underline{Remarque :} les manipulations décrites dans cette partie sont implémentées dans le fichier source \lstinline!DES_K16.c!.
+		\noindent \underline{Remarque} : les manipulations décrites dans cette partie sont implémentées dans le fichier source \lstinline!DES_K16.c!.
+		
+		\paragraph{} Dans la partie précédente, on est arrivé à établir 8 équations dont chacune révélait les 6 bits de $k_{16}$ qui rentrent dans chaque S-box. Cependant, il en faudrait plus qu'une simple recherche exhaustive sur chaque S-box, et ceci pour 2 raisons :
+		
+			\paragraph{Problème 1 : propagation du bit faux :}
+				\paragraph{} Lors de l'attaque, la faute est introduite sur un seul bit parmi les 32 bits du demi-bloc sortant du 15\up{ème} tour du DES, $R_{15}$ qui devient $R_{15}^{*}$. Le problème est qu'un bit erroné n'agit pas sur toutes les 8 S-box que l'on va attaquer puisque les données entrantes aux S-box sont réparties par 6 bits.\\
+				En effet, pour une S-box $i$ et des données de 6 bits allant de $x$ à $y$) :
+				\[
+				P^{-1}(L_{16} \oplus L_{16}^{*})_{\ \textrm{bits}\ x \to y}\ = \ S_{i}\ (E(R_{15}) \oplus k_{16})_{\ \textrm{bits}\ x \to y}\ \oplus \ S_{i}\ (E(R_{15}^{*}) \oplus k_{16})_{\ \textrm{bits}\ x \to y}
+				\]
+				Le problème survient lorsque sur ces 6 bits allant de $x$ à $y$, le bit erroné par l'attaque n'est pas propagé. Dans ce cas on aura $R_{15}\ =\ R_{15}^{*}$, ce qui induit aussi que $L_{16}\ =\ L_{16}^{*}$. L'équation qui permet la recherche sur cette S-box $i$ sera de la forme $0\ =\ 0$ ce qui ne révèlerait aucune information sur les 6 bits de $k_{16}$ allant de $x$ à $y$.
+				
+				\paragraph{} La solution pour remédier à ce problème est d'attaquer le DES par plusieurs fautes dont les bits erronés vont nécessairement se propager jusqu'au 6 bits en entrée de chacune des 8 S-box. En effet, pour assurer cela, il faut vérifier la table d'expansion des bits E :
+
+				\begin{center}\includegraphics[scale=0.5]{E.png}\end{center}
+				
+				Cette table est utilisée pour effectuer une expansion de 32 bits du demi-bloc pris en entrée, en une entité de 48 bits. Ces 48 bits vont être découpées en 8 blocs de 6 bits. Par exemple une faute sur le 32\up{ème} bit va être propagée au 1\up{er} et 47\up{ème} bit de la sortie de l'expansion, et va ainsi se propager à la S-box 1 et 8. Donc pour une faute, on peut avoir une propagation sur une ou deux S-box au plus.
+				
+			\paragraph{Problème 2 : nombre de solutions des S-box :}
+				\paragraph{} Une équation du type $y = S-box(x)$ peut avoir plusieurs solutions pour $x$, à cause de la manière dont une S-box est construite. De ce fait, une recherche exhaustive sur une S-box donnera potentiellement plusieurs solutions pour le 6 bits de $k_{16}$. Il est donc impossible de conclure quant aux bons 6 bits de $k_{16}$.
+				
+				\paragraph{} La solution pour remédier à ce problème est d'attaquer chaque S-box par plusieurs fautes. Pour chaque faute, on va faire une recherche exhaustive des solutions de la S-box concernée, tout en sauvegardant cet ensemble de solutions. La bonne solution qui sera prise en compte pour les 6 bit de $k_{16}$ est celle qui est en commun à toutes les fautes injectées.\\
+				Il faut bien entendu préciser que les fautes utilisées pour attaquer chaque S-box doivent avoir des bits erronés qui se propagent bien sur les 8 S-box.
+				
+				
+			\paragraph{Recherche $k_{16}$ :}
+			
+			\paragraph{} Compte tenu des problèmes énoncés, on peut maintenant procéder à la recherche de $k_{16}$.
+			\begin{itemize}
+				\item On commence d'abord par récupérer les 32 chiffrés faux fournis. Après analyse de ces chiffrés, on a pu récupérer pour chaque S-box 6 chiffrés faux dont on s'est assuré que le bit erroné va bien se propager dans la S-box concernée lors de la recherche exhaustive. Pour chacune des 8 S-box, on indique dans une table la position de ces 6 chiffrés faux :
+				\lstinputlisting[caption={DES\_K16.c}, firstline=24, lastline=33]{../../App/src/DES_K16.c}
+			
+				\item Ensuite, on calcule les éléments vrais de l'équation ($R_{15}$ et $L_{16}$) :
+				\lstinputlisting[caption={DES\_K16.c}, firstline=35, lastline=38]{../../App/src/DES_K16.c}
+			
+				\item On attaque maintenant attaque chacune de 8 S-box par 6 fautes, tout en recalculant à chaque fois les éléments faux de l'équation ($R_{15}^{*}$ et $L_{16}^{*}$) :
+				\lstinputlisting[caption={DES\_K16.c}, firstline=41, lastline=79]{../../App/src/DES_K16.c}
+				
+				\item L'attaque va donner un ensemble de solutions possibles pour chacune des 6 fautes. Il faudra finalement récupérer la solution unique qui correspond aux bons 6 bits de $k_{16}$, et ceci pour chacune des 8 S-box :
+				\lstinputlisting[caption={DES\_K16.c}, firstline=91, lastline=114]{../../App/src/DES_K16.c}
+			\end{itemize}
+			
+			Voici un aperçu des différentes étapes de l'exécution de cette recherche de $k_{16}$ :
+			
+			\begin{center}\includegraphics[scale=0.8]{K16.png}\end{center}
+			
+		\subsection*{2.2 Valeur de la clé $k_{16}$ de 48 bits}
+		\[ \textrm{E1D9B0BDF15E} \]
+		
+	\section*{Question 3 :}
+		
+		\noindent \underline{Remarque} : les manipulations décrites dans cette partie sont implémentées dans le fichier source \lstinline!DES_K.c!.
+		
+		\subsection*{3.1 Recherche des 8 bits manquants}
+		
 		
 \end{document}
