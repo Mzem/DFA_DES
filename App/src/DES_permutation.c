@@ -1,16 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-long binaire (long n) {	
-	long i = 1, bin = 0;
-	while (n >= 1) {
-		bin += (n%2)*i;
-		n = n/2;
-		i = i*10;
-	}
-	return bin;
-}
-
 //Permute les bits de l'entree aPermuter, selon la table table[], le nombre d'éléments de table[] doit etre égal à tailleSortie
 long permutation(long aPermuter, int table[] ,int tailleEntree, int tailleSortie) {
 		

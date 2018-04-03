@@ -167,8 +167,7 @@ static int PC2[] = {
 	46,	42,	50,	36,	29,	32
 };
 
-// 9, 18, 22, 25, 35, 38, 43, 54e bits inconnus
-// affectés à 0 par défaut
+//Les bits 9, 18, 22, 25, 35, 38, 43 et 54 sont perdus, ils sont donc mis à 0 dans cette table
 static int PC2inv[] = {
 	5,	24,	7,	16,	6,	10,
 	20,	18,	0,	12,	3,	15,

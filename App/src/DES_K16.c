@@ -73,7 +73,7 @@ long rechercheK16(long chiffreJuste, long chiffreFaux[])
 				if ( PP ==	SS ) 
 				{	
 					sol[s][f][nbSol[s][f]] = k16i;
-					nbSol[s][f]++;
+					++nbSol[s][f];
 				}
 			}
 		}
@@ -83,7 +83,7 @@ long rechercheK16(long chiffreJuste, long chiffreFaux[])
 		for (int f = 0; f < 6; f++) 
 		{
 			printf("Faute %d : %d solutions\t", f+1, nbSol[s][f]);
-			for (int i = 0; i < nbSol[s][i]; i++) 
+			for (int i = 0; i < nbSol[s][f]; i++) 
 				printf("%x ", sol[s][f][i]);
 			printf("\n"); 
 		}
@@ -93,8 +93,8 @@ long rechercheK16(long chiffreJuste, long chiffreFaux[])
 		long candidat = (long) sol[s][0][numSolf0];
 		for (int f = 1; f < 6; f++)
 		{
-			int numSolf = 0;
-			for (numSolf; numSolf < nbSol[s][f]; numSolf++)
+			int numSolf;
+			for (numSolf = 0; numSolf < nbSol[s][f]; numSolf++)
 				if (candidat == sol[s][f][numSolf])
 					break;
 			
@@ -104,11 +104,11 @@ long rechercheK16(long chiffreJuste, long chiffreFaux[])
 					break;
 				}
 				f = 1;
-				numSolf0++;
+				++numSolf0;
 				candidat = (long) sol[s][0][numSolf0];
 			}
 		}
-		printf("Solution S%d = %lx\n",s+1,candidat);
+		printf("Solution S%d = %lx | ",s+1,candidat);
 		K16 = K16 << 6;
 		K16 = K16 | candidat;
 		printf("K16 actuel = %lx\n",K16);

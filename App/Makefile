@@ -21,7 +21,7 @@ $(OBJDIR)/DES_algo.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h
 $(OBJDIR)/DES_key_schedule.o: $(HEADDIR)/DES_permutation.h
 $(OBJDIR)/DES_f.o: $(HEADDIR)/DES_permutation.h
 $(OBJDIR)/DES_K16.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h
-$(OBJDIR)/DES_K.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h
+$(OBJDIR)/DES_K.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h $(HEADDIR)/DES_algo.h
 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
