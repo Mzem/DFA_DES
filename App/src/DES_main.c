@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../head/DES_algo.h"
-#include "../head/DES_atq.h"
+#include "../head/DES_K16.h"
+#include "../head/DES_K.h"
 
 
 int main()

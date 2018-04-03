@@ -12,15 +12,16 @@ run: $(EXEC)
 	./$(EXEC)
 
 
-$(EXEC): $(OBJDIR)/DES_main.o $(OBJDIR)/DES_algo.o $(OBJDIR)/DES_atq.o $(OBJDIR)/DES_key_schedule.o $(OBJDIR)/DES_permutation.o $(OBJDIR)/DES_f.o
+$(EXEC): $(OBJDIR)/DES_main.o $(OBJDIR)/DES_algo.o $(OBJDIR)/DES_key_schedule.o $(OBJDIR)/DES_permutation.o $(OBJDIR)/DES_f.o $(OBJDIR)/DES_K16.o $(OBJDIR)/DES_K.o
 	$(CC) $^ -o $@
 
 
-$(OBJDIR)/DES_main.o: $(HEADDIR)/DES_algo.h $(HEADDIR)/DES_atq.h
+$(OBJDIR)/DES_main.o: $(HEADDIR)/DES_algo.h $(HEADDIR)/DES_K16.h $(HEADDIR)/DES_K.h
 $(OBJDIR)/DES_algo.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h
 $(OBJDIR)/DES_key_schedule.o: $(HEADDIR)/DES_permutation.h
 $(OBJDIR)/DES_f.o: $(HEADDIR)/DES_permutation.h
-$(OBJDIR)/DES_atq.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h
+$(OBJDIR)/DES_K16.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h
+$(OBJDIR)/DES_K.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h
 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c

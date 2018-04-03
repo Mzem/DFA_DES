@@ -82,7 +82,7 @@ long rechercheK16(long chiffreJuste, long chiffreFaux[])
 		printf("\nSbox %d\n", s + 1);
 		for (int f = 0; f < 6; f++) 
 		{
-			printf("Faute %d : %d solutions\t", f, nbSol[s][f]);
+			printf("Faute %d : %d solutions\t", f+1, nbSol[s][f]);
 			for (int i = 0; i < nbSol[s][i]; i++) 
 				printf("%x ", sol[s][f][i]);
 			printf("\n"); 

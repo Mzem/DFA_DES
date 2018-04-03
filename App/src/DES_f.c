@@ -5,8 +5,6 @@
 
 long f(long R, long Ki) 
 {
-	
-	
 	//On expand les 32 bits de R pour avoir 48 bits, puis on XOR avec Ki : T = ERxorKi
 	long T = permutation(R, E, 32, 48) ^ Ki;
 	
