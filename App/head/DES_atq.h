@@ -3,4 +3,6 @@
 
 // Attaque par faute sur DES
 
+long rechercheK16(long, long[]);
+
 #endif

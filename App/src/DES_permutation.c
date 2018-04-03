@@ -12,17 +12,17 @@ long binaire (long n) {
 }
 
 //Permute les bits de l'entree aPermuter, selon la table table[], le nombre d'éléments de table[] doit etre égal à tailleSortie
-long permutation(long aPermuter, int table[], int tailleSortie) {
+long permutation(long aPermuter, int table[] ,int tailleEntree, int tailleSortie) {
 		
 	long res = 0x0L;
 	long pos = 0x1L;
 	long tmp;
 	
 	//On va selectionner le bit à la position table[i] de aPermuter et le rajouter à res à la position taille-i
-	for(int i = 0; i < tailleSortie; i++) 
+	for (int i = 0; i < tailleSortie; i++) 
 	{
 		//On se positionne dans tmp en mettant le bit 1 dans la position table[i]
-		tmp = pos << (tailleSortie - table[i]);
+		tmp = pos << (tailleEntree - table[i]);
 		
 		//On récupère le bit de aPermuter à cette position
 		tmp = aPermuter & tmp;

@@ -20,6 +20,7 @@ $(OBJDIR)/DES_main.o: $(HEADDIR)/DES_algo.h $(HEADDIR)/DES_atq.h
 $(OBJDIR)/DES_algo.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h
 $(OBJDIR)/DES_key_schedule.o: $(HEADDIR)/DES_permutation.h
 $(OBJDIR)/DES_f.o: $(HEADDIR)/DES_permutation.h
+$(OBJDIR)/DES_atq.o: $(HEADDIR)/DES_permutation.h $(HEADDIR)/DES_key_schedule.h $(HEADDIR)/DES_f.h
 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c

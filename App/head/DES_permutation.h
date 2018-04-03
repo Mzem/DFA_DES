@@ -5,6 +5,6 @@
 
 long binaire(long);
 
-long permutation(long, int[], int);
+long permutation(long, int[], int, int);
 
 #endif
