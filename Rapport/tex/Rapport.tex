@@ -133,6 +133,29 @@
 		\noindent \underline{Remarque} : les manipulations décrites dans cette partie sont implémentées dans le fichier source \lstinline!DES_K.c!.
 		
 		\subsection*{3.1 Recherche des 8 bits manquants}
-		
-		
+			On a obtenu précédemment une clé $k_{16}$ de 48 bits. On va utiliser cette clé pour reconstituer la clé mère K de 64 bits. Pour cela, on va analyser l'algorithme de dérivation de clés qui est illustré dans la figure ci-dessous :
+			\begin{center}\includegraphics[scale=0.5]{KEY.png}\end{center}
+			
+			On remarque qu'en appliquant les inverses des 2 fonctions de permutation PC1 et PC2 à partir de $k_{16}$, on retombe sur la clé K de 64 bits. En effet,
+			\[K\ =\ PC1^{-1}(\ PC2^{-1}(\ k_{16}\ ))\]
+			
+			Cependant, un problème se pose à cause de la nature de la permutation PC2. En effet, PC2 est une permutation qui prend 56 bits en entrée et en renvoie 48. Quand on applique la permutation inverse PC2\up{-1}, on prend 48 bits en entrée et on en renvoie 56. On perd les informations de 8 bits.\\
+			\indent Ces 8 bits perdus ont des positions bien précises qu'on trouve par analyse de la permutation appliquer par PC2. Ces positions celles des bits 9, 18, 22, 25, 35, 38, 43 et 54. Lorsqu'on reconstruit la table de la permutation inverse PC2\up{-1}, on met la permutation à 0 pour ces positions.
+			
+			\paragraph{Recherche :} 
+			\paragraph{} La première étape de la recherche des 8 bits perdus était de reconstituer une clé qu'on va appeler $K^{*}$ de 64 bits telle que $K^{*}\ =\ PC1^{-1}(\ PC2^{-1}(\ k_{16}\ ))$.\\
+			\indent Ensuite, une fois qu'on a récupéré les positions bits perdus par PC2\up{-1} (9, 18, 22, 25, 35, 38, 43 et 54), on effectue une recherche exhaustive pour ces 8 bits (complexité au pire de $2^{8}$). Cette recherche va appliquer un masque différent sur la clé à chaque itération pour alterner les 8 bits aux positions précises sur les 64 bits de $K^{*}$ :
+			\lstinputlisting[caption={DES\_K.c}, firstline=32, lastline=43]{../../App/src/DES_K.c}
+			\lstinputlisting[caption={DES\_K.c}, firstline=9, lastline=18]{../../App/src/DES_K.c}
+			
+			\paragraph{Bits de parité :} 
+			\paragraph{} La recherche des 8 bits perdus a permis de retrouver 56 bits parmi les 64 bits de la clé mère K. Les 8 bits qui restent sont les bits de parités. Ils n'interviennent pas dans l'opération de chiffrement du DES et n'ont donc pas d'impact lors de la recherche des 8 bits perdus.
+			
+			\paragraph{} Voici un aperçu des différentes étapes de l'exécution de la reconstitution de la clé mère K de 64 bits :
+			
+			\begin{center}\includegraphics[scale=1]{K.png}\end{center}
+			
+		\subsection*{3.2 Valeur de la clé K de 64 bits}
+		\[ \textrm{52F8FD169D4A707F} \]
+			
 \end{document}
