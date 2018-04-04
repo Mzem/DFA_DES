@@ -27,7 +27,7 @@
 		
 		\paragraph{} L'attaque par faute contre le DES est une attaque provoquant une faute intentionnelle dans l'algorithme afin de compromettre ses calculs. Cette faute va permettre de révéler une partie de la clé utilisée. Une attaque par recherche exhaustive sur la clé du DES a une complexité de $2^{56}$. L'objectif de l'attaque par faute est donc d'accélérer la recherche.
 		
-		\paragraph{} Dans notre cas, la faute est provoquée à la sortie $R_{15}$ du 15\up{ème} tour de Feitsel du DES. Il s'agit d'un échange d'un seul bit parmi les 32 bits de $R_{15}$ (\textit{single bit flip}), ce qui va donner une sortie fausse au 15\up{ème} tour qu'on note $R_{15}^{*}$. La figure ci-dessous illustre l'injection d'une faute à la sortie 15\up{ème} tour du DES :
+		\paragraph{} Dans notre cas, la faute est provoquée à la sortie $R_{15}$ du 15\up{ème} tour de Feitsel du DES. Il s'agit d'un échange d'un seul bit parmi les 32 bits de $R_{15}$ (\textit{single bit flip}), ce qui va donner une sortie fausse au 15\up{ème} tour qu'on note $R_{15}^{*}$. La figure ci-dessous illustre l'injection d'une faute à la sortie du 15\up{ème} tour du DES :
 		
 		\begin{center}\includegraphics[scale=0.4]{DES_atq.png}\end{center}
 		
@@ -85,13 +85,13 @@
 		
 			\paragraph{Problème 1 : propagation du bit faux :}
 				\paragraph{} Lors de l'attaque, la faute est introduite sur un seul bit parmi les 32 bits du demi-bloc sortant du 15\up{ème} tour du DES, $R_{15}$ qui devient $R_{15}^{*}$. Le problème est qu'un bit erroné n'agit pas sur toutes les 8 S-box que l'on va attaquer puisque les données entrantes aux S-box sont réparties par 6 bits.\\
-				En effet, pour une S-box $i$ et des données de 6 bits allant de $x$ à $y$) :
+				En effet, pour une S-box $i$ et des données de 6 bits allant de $x$ à $y$ :
 				\[
 				P^{-1}(L_{16} \oplus L_{16}^{*})_{\ \textrm{bits}\ x \to y}\ = \ S_{i}\ (E(R_{15}) \oplus k_{16})_{\ \textrm{bits}\ x \to y}\ \oplus \ S_{i}\ (E(R_{15}^{*}) \oplus k_{16})_{\ \textrm{bits}\ x \to y}
 				\]
 				Le problème survient lorsque sur ces 6 bits allant de $x$ à $y$, le bit erroné par l'attaque n'est pas propagé. Dans ce cas on aura $R_{15}\ =\ R_{15}^{*}$, ce qui induit aussi que $L_{16}\ =\ L_{16}^{*}$. L'équation qui permet la recherche sur cette S-box $i$ sera de la forme $0\ =\ 0$ ce qui ne révèlerait aucune information sur les 6 bits de $k_{16}$ allant de $x$ à $y$.
 				
-				\paragraph{} La solution pour remédier à ce problème est d'attaquer le DES par plusieurs fautes dont les bits erronés vont nécessairement se propager jusqu'au 6 bits en entrée de chacune des 8 S-box. En effet, pour assurer cela, il faut vérifier la table d'expansion des bits E :
+				\paragraph{} La solution pour remédier à ce problème est d'attaquer le DES par plusieurs fautes dont les bits erronés vont nécessairement se propager jusqu'aux 6 bits en entrée de chacune des 8 S-box. En effet, pour assurer cela, il faut vérifier la table d'expansion des bits E :
 
 				\begin{center}\includegraphics[scale=0.5]{E.png}\end{center}
 				
@@ -114,7 +114,7 @@
 				\item Ensuite, on calcule les éléments vrais de l'équation ($R_{15}$ et $L_{16}$) :
 				\lstinputlisting[caption={DES\_K16.c}, firstline=35, lastline=38]{../../App/src/DES_K16.c}
 			
-				\item On attaque maintenant attaque chacune de 8 S-box par 6 fautes, tout en recalculant à chaque fois les éléments faux de l'équation ($R_{15}^{*}$ et $L_{16}^{*}$) :
+				\item On attaque maintenant chacune de 8 S-box par 6 fautes, tout en recalculant à chaque fois les éléments faux de l'équation ($R_{15}^{*}$ et $L_{16}^{*}$) :
 				\lstinputlisting[caption={DES\_K16.c}, firstline=41, lastline=79]{../../App/src/DES_K16.c}
 				
 				\item L'attaque va donner un ensemble de solutions possibles pour chacune des 6 fautes. Il faudra finalement récupérer la solution unique qui correspond aux bons 6 bits de $k_{16}$, et ceci pour chacune des 8 S-box :
@@ -124,6 +124,8 @@
 			Voici un aperçu des différentes étapes de l'exécution de cette recherche de $k_{16}$ :
 			
 			\begin{center}\includegraphics[scale=0.8]{K16.png}\end{center}
+			
+			La recherche de $k_{16}$ ainsi décrite aura une complexité de $8 * 6 * 2^{6}$ = $3 * 2^{10}$.
 			
 		\subsection*{2.2 Valeur de la clé $k_{16}$ de 48 bits}
 		\[ \textrm{E1D9B0BDF15E} \]
@@ -140,11 +142,11 @@
 			\[K\ =\ PC1^{-1}(\ PC2^{-1}(\ k_{16}\ ))\]
 			
 			Cependant, un problème se pose à cause de la nature de la permutation PC2. En effet, PC2 est une permutation qui prend 56 bits en entrée et en renvoie 48. Quand on applique la permutation inverse PC2\up{-1}, on prend 48 bits en entrée et on en renvoie 56. On perd les informations de 8 bits.\\
-			\indent Ces 8 bits perdus ont des positions bien précises qu'on trouve par analyse de la permutation appliquer par PC2. Ces positions celles des bits 9, 18, 22, 25, 35, 38, 43 et 54. Lorsqu'on reconstruit la table de la permutation inverse PC2\up{-1}, on met la permutation à 0 pour ces positions.
+			\indent Ces 8 bits perdus ont des positions bien précises qu'on trouve par analyse de la permutation appliquée par PC2. Ces positions sont celles des bits 9, 18, 22, 25, 35, 38, 43 et 54. Lorsqu'on reconstruit la table de la permutation inverse PC2\up{-1}, on met la permutation à 0 pour ces positions.
 			
 			\paragraph{Recherche :} 
 			\paragraph{} La première étape de la recherche des 8 bits perdus était de reconstituer une clé qu'on va appeler $K^{*}$ de 64 bits telle que $K^{*}\ =\ PC1^{-1}(\ PC2^{-1}(\ k_{16}\ ))$.\\
-			\indent Ensuite, une fois qu'on a récupéré les positions bits perdus par PC2\up{-1} (9, 18, 22, 25, 35, 38, 43 et 54), on effectue une recherche exhaustive pour ces 8 bits (complexité au pire de $2^{8}$). Cette recherche va appliquer un masque différent sur la clé à chaque itération pour alterner les 8 bits aux positions précises sur les 64 bits de $K^{*}$ :
+			\indent Ensuite, une fois qu'on a récupéré les positions des bits perdus par PC2\up{-1} (9, 18, 22, 25, 35, 38, 43 et 54), on effectue une recherche exhaustive pour ces 8 bits (complexité au pire de $2^{8}$). Cette recherche va appliquer un masque différent sur la clé à chaque itération pour alterner les 8 bits aux positions précises sur les 64 bits de $K^{*}$ :
 			\lstinputlisting[caption={DES\_K.c}, firstline=32, lastline=43]{../../App/src/DES_K.c}
 			\lstinputlisting[caption={DES\_K.c}, firstline=9, lastline=18]{../../App/src/DES_K.c}
 			
@@ -157,5 +159,37 @@
 			
 		\subsection*{3.2 Valeur de la clé K de 64 bits}
 		\[ \textrm{52F8FD169D4A707F} \]
+		
+	\section*{Question 4 :}
+	
+		\noindent Fautes sur les tours précédents.
+		
+		\paragraph{} L'injection d'une faute sur la sortie $R_{14}$ du 14\up{ème} tour va générer une sortie $R_{14}^{*}$. On peut penser à 2 méthodes pour exploiter cette attaque.
+		
+		\paragraph{} La première idée consiste à réutiliser les équations trouvées pour l'attaque sur la sortie du 15\up{ème} tour, afin de retrouver $k_{16}$ et ainsi retrouver K :
+		\[
+			P^{-1}(L_{16} \oplus L_{16}^{*})_{\ \textrm{bits}\ x \to y}\ = \ S_{i}\ (E(R_{15}) \oplus k_{16})\ \oplus \ S_{i}\ (E(R_{15}^{*}) \oplus k_{16})
+		\]
+		Le problème ici c'est qu'il faut bien choisir les fautes à injecter pour qu'il y ait propagation d'un bit faux jusqu'au 16\up{ème} tour pour chacune des 8 S-box à attaquer. Cependant, le traçage de la propagation du bit faux devient impossible à cause de l'application de la fonction $f$ avec une sous-clé inconnue à chaque tour, avant d'en arriver au 16\up{ème}.\\
+		On peut essayer de faire une recherche de $k_{15}$ afin de continuer le traçage de la propagation des bits faux. Mais ceci sous condition qu'on connaisse aussi $L_{15}$, $L_{15}^{*}$. La complexité est donc élevée au carré pour chaque tour antérieur.\\
+		Pour le 14\up{ème} tour, la complexité sera de $3 * 2^{20}$.\\
+		Pour le 12\up{ème} tour, la complexité sera de $3 * 2^{80}$ ce qui est impossible à calculer.
+		
+		\paragraph{} La deuxième idée consiste à établir 8 nouvelles équations pour le tour concerné. Si $t$ désigne le numéro du tour après lequel on injecte la faute, $i \in \{1, ...,8\}$ le numéro de la S-box, on aura :
+		\[
+			P^{-1}(L_{t+1} \oplus L_{t+1}^{*})_{\ \textrm{bits}\ x \to y}\ = \ S_{i}\ (E(R_{t}) \oplus k_{t+1})\ \oplus \ S_{i}\ (E(R_{t}^{*}) \oplus k_{t+1})
+		\]
+		
+		La difficulté consiste dans le calcul de $L_{t+1}$, $L_{t+1}^{*}$, $R_{t}$ et $R_{t}^{*}$. Cependant, l'attaque par fautes est une attaque physique, donc on peut supposer qu'il est possible de récupérer ces valeurs. La seule inconnue qui reste à retrouver est $k_{t+1}$. On procède de la même manière que pour le 15\up{ème} tour. Ceci s'applique à tous les tours.\\
+		\indent Par contre, le point de divergence est la recherche de la clé de 64 bits. En effet, il faudra faire le chemin inverse dans l'algorithme de dérivation de clé à partir de la position du tour $t$, en appliquant des rotations à droite, d'1 ou 2 crans. La complexité n'augmente que de peu dans ce cas.
+		
+	\section*{Question 5 :}
+	Un attaque par faut a pour principe de générer des fautes dans le circuit d'exécution d'un algorithme. Ces fautes sont généralement réalisées par une modification des conditions environnementales ou la modification des signaux de contrôle (tensions alimentation, champs magnétiques, etc.). Les contre-mesures contre ce type d'attaques peuvent être déployées à tous les niveaux entre le matériel et l'application mais les plus efficaces sont celles qui s'appuient sur des mécanismes de détection d’erreur au sein du circuit.
+	
+	\paragraph{Redondance matérielle :} cette contre-mesure a pour principe de réaliser la même opération sur plusieurs copies d’un même bloc de calcul et d’en comparer les résultats. Un exemple est la duplication simple avec comparaison qui est basée sur l’utilisation de deux copies en parallèle du même bloc, suivies par la comparaison des deux résultats. Dans ce cas les ressources de la carte à puce qui effectue le calcul seront réparties sur 2 calculs, et le temps de calcul va donc être au pire des cas multiplié par 2.
+	
+	\paragraph{Redondance temporelle :} basée sur la ré-exécution d’un même calcul sur le même bloc matériel et la comparaison des différents résultats obtenus. La redondance temporelle simple est basée sur la double exécution d’un calcul sur un même bloc de calcul. Les résultats ainsi obtenus sont donc comparés. Le temps de calcul va être multiplié par 2 dans tous les cas.
+	
+	\paragraph{Solutions algorithmiques :} ajout de portions de code de test, exécutés en même temps que l'algorithme. Si une erreur est détectée, on incrémente un compteur, au delà d’une certaine valeur, le système est réinitialisé. Les programmes de test sont très courts et se résument généralement à des lectures/écritures en mémoire, des opérations arithmétiques simples ou toute fonction facile à vérifier. Il rajoutent donc un certain facteur (nombre d'opérations de test) au temps de calcul. 
 			
 \end{document}
